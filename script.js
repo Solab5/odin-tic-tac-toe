@@ -46,15 +46,49 @@ function Gameboard() {
 
     // Method to check for a winner
     const checkForWinner = () => {
-    
+        const currentPlayerToken = activePlayer.token;
+        // check for rows, columns, and diagonals for three consecutive tokens
+
+        for (let i=0; i<3; i++) {
+            //rows
+            if (
+                board.getBoard()[i][0].getValue() === currentPlayerToken &&
+                board.getBoard()[i][1].getValue() === currentPlayerToken &&
+                board.getBoard()[i][2].getValue() === currentPlayerToken 
+            ) {
+                return activePlayer
+            }
+            // columns
+            if (
+                board.getBoard()[0][i].getValue() === currentPlayerToken &&
+                board.getBoard()[1][i].getValue() === currentPlayerToken &&
+                board.getBoard()[2][i].getValue() === currentPlayerToken 
+            ) {
+                return activePlayer
+            }
+
+        }
+
+        // check diagonals
+        if (
+            (board.getBoard()[0][0].getValue() === currentPlayerToken &&
+                board.getBoard()[1][1].getValue() === currentPlayerToken &&
+                board.getBoard()[2][2].getValue() === currentPlayerToken) ||
+            (board.getBoard()[0][2].getValue() === currentPlayerToken &&
+                board.getBoard()[1][1].getValue() === currentPlayerToken &&
+                board.getBoard()[2][0].getValue() === currentPlayerToken)
+        ) {
+            return activePlayer; // Return the active player as the winner
+        }
+        return null;
     };
-    // Method to check if the board is full
-    const isBoardFull = () => {
+    // // Method to check if the board is full
+    // const isBoardFull = () => {
     
-    };
+    // };
     // Method to reset board
     const resetBoard = () => {
-    
+        board = []
     };
 
     return {
@@ -62,7 +96,6 @@ function Gameboard() {
         dropToken,
         printBoard,
         checkForWinner,
-        isBoardFull,
         resetBoard
     };
 }
