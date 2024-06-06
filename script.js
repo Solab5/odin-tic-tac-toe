@@ -1,149 +1,114 @@
-// Define the cell factory to represent a single cell on the board
-function Cell(){
-    let value = '';
+// tic tac toe game
 
-    // Method to update the cell's value with the player's token
-    const addToken = (token) => {
-    value = token;
-    };
+// Game board function
 
-    // Method to retrieve the current value of the cell
-    const getValue = () => value;
-    return {
-        addToken,
-        getValue
-    };
-
-}
-
-// Define the gameboard factory to represent the game board
 function Gameboard() {
-    const board = [];
     const rows = 3;
     const columns = 3;
+    const board = [];
 
-    for (let i=0; i<rows; i++){
+    for (i=0; i<rows; i++){
         board[i] = [];
-        for (let j=0; j<columns; j++){
+        for (j=0; j<columns; j++){
             board[i].push(Cell());
         }
     }
 
-    // Method to get the cirrent state of the board
+    // method for getting the board
     const getBoard = () => board;
 
-    // Method to drop the player's token into a specific cell
-    const dropToken = (row, column, token) => {
-        board[row][column].addToken(token);
-    };
+    // method for dropping the token
+    const dropToken = (row, column, player) => {
+        // method to check if the cell already has a token
+        if (board[row][column].getValue() !== 0) {
+            return false;
+        }
 
-    // Method to print the current state of the board
+        // add the token to the cell
+        board[row][column].addToken(player);
+    }
+
+    // method to print the board
     const printBoard = () => {
-        board.forEach(row => {
-            console.log(row.map(cell => cell.getValue()).join(''));
-        });
-    };
+        const boardWithCellValues = board.map(row => row.map(cell => cell.getValue()));
+        console.log(boardWithCellValues);
+    }
 
-    // Method to check for a winner
-    const checkForWinner = () => {
-        const currentPlayerToken = activePlayer.token;
-        // check for rows, columns, and diagonals for three consecutive tokens
-
-        for (let i=0; i<3; i++) {
-            //rows
-            if (
-                board.getBoard()[i][0].getValue() === currentPlayerToken &&
-                board.getBoard()[i][1].getValue() === currentPlayerToken &&
-                board.getBoard()[i][2].getValue() === currentPlayerToken 
-            ) {
-                return activePlayer
-            }
-            // columns
-            if (
-                board.getBoard()[0][i].getValue() === currentPlayerToken &&
-                board.getBoard()[1][i].getValue() === currentPlayerToken &&
-                board.getBoard()[2][i].getValue() === currentPlayerToken 
-            ) {
-                return activePlayer
-            }
-
-        }
-
-        // check diagonals
-        if (
-            (board.getBoard()[0][0].getValue() === currentPlayerToken &&
-                board.getBoard()[1][1].getValue() === currentPlayerToken &&
-                board.getBoard()[2][2].getValue() === currentPlayerToken) ||
-            (board.getBoard()[0][2].getValue() === currentPlayerToken &&
-                board.getBoard()[1][1].getValue() === currentPlayerToken &&
-                board.getBoard()[2][0].getValue() === currentPlayerToken)
-        ) {
-            return activePlayer; // Return the active player as the winner
-        }
-        return null;
-    };
-    // // Method to check if the board is full
-    // const isBoardFull = () => {
-    
-    // };
-    // Method to reset board
-    const resetBoard = () => {
-        board = []
-    };
-
+    // provide an interface for the rest of the application
     return {
         getBoard,
         dropToken,
-        printBoard,
-        checkForWinner,
-        resetBoard
+        printBoard
     };
 }
 
-// Define the player factory function to represent a player
-function Player(name, token) {
+// Cell factory function
+function Cell() {
+    let value = 0;
+
+    // accept players token
+    const addToken = (player) => {
+        value = player;
+    };
+
+    // return the value of the cell
+    const getValue = () => value;
+
     return {
-        name,
-        token
+        addToken,
+        getValue
     };
 }
 
-const GameController = (() => {
-    const player1 = Player('Player One', 'X');
-    const player2 = Player('Player Two', 'O');
-    let activePlayer = player1;
+// Game controller
+function gameController(
+    player1 = "Player 1",
+    player2 = "Player 2"
+    ) {
     const board = Gameboard();
-
-    // Method to switch the active player
-    const switchPlayerTurn = () => {
-     activePlayer = activePlayer === player1 ? player2: player1
-    };
-
-    // Method to switch the player's move
-    const handleMove = (row, column) => {
-        if (board.getBoard()[row][column].getValue() == ''){
-            board.dropToken(row, column, activePlayer.token);
-            switchPlayerTurn();
-            board.printBoard();
-
-        } else {
-            console.log('This cell is already occupied. Please choose another cell.')
+    const players = [
+        {
+            name: player1,
+            token: 1
+        },
+        {
+            name: player2,
+            token: 2
         }
-    };
+    ]
+    let currentPlayer = players[0];
 
-    // Method to reset the game
-    const resetGame = () => {
-        board.resetBoard();
-        activePlayer = player1;
-        console.log('Game reset. Player one starts.');
+    // switch players turn
+
+    const switchPlayerTurn = () => {
+        currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
+    }
+    
+    const getActivePlayer = () => currentPlayer;
+
+    const printNewRound = () => {
         board.printBoard();
+        console.log(`${getActivePlayer().name}'s turn`);
     };
 
-    console.log('Game starts. Player one starts');
-    board.printBoard();
+    const playRound = (row, column) => {
+        console.log(`dropping ${getActivePlayer().name}'s token at row ${row}, column ${column}`);
+        board.dropToken(row, column, getActivePlayer().token);
+
+        // check for winner
+
+        // switch player turn
+        switchPlayerTurn();
+        printNewRound();
+    };
+
+    // Initial play game message
+    printNewRound();
 
     return {
-        handleMove,
-        resetGame
+        playRound,
+        getActivePlayer,
     };
-})();
+}
+
+game = gameController()
