@@ -96,11 +96,75 @@ function gameController(
         board.dropToken(row, column, getActivePlayer().token);
 
         // check for winner
+        // check for winner in rows
+        function checkHorizontal() {
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (board.getBoard()[i][j].getValue() !== getActivePlayer().token) {
+                        break;
+                    }
+                    if (j === 2) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // check for winner in columns
+        function checkVertical() {
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (board.getBoard()[j][i].getValue() !== getActivePlayer().token) {
+                        break;
+                    }
+                    if (j === 2) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // check for winner in diagonals
+        function checkDiagonal() {
+            if (
+                (board.getBoard()[0][0].getValue() === getActivePlayer().token &&
+                    board.getBoard()[1][1].getValue() === getActivePlayer().token &&
+                    board.getBoard()[2][2].getValue() === getActivePlayer().token) ||
+                (board.getBoard()[0][2].getValue() === getActivePlayer().token &&
+                    board.getBoard()[1][1].getValue() === getActivePlayer().token &&
+                    board.getBoard()[2][0].getValue() === getActivePlayer().token)
+            ) {
+                return true;
+            }
+            return false;
+        }
+
+        // check for a draw
+        function checkDraw() {
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (board.getBoard()[i][j].getValue() === 0) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // check for end of game
+        if (checkHorizontal() || checkVertical() || checkDiagonal()) {
+            console.log(`${getActivePlayer().name} wins!`);
+            return;
+        }
 
         // switch player turn
         switchPlayerTurn();
         printNewRound();
     };
+
+
 
     // Initial play game message
     printNewRound();
